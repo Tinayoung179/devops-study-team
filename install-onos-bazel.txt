@@ -1,0 +1,34 @@
+## Make with anguished by @nosanek
+
+sudo apt install git g++ unzip zip curl
+
+wget https://github.com/bazelbuild/bazel/releases/download/6.0.0-pre.20220421.3/bazel-6.0.0-pre.20220421.3-installer-linux-x86_64.sh
+
+chmod +x bazel-6.0.0-pre.20220421.3-installer-linux-x86_64.sh
+
+./bazel-6.0.0-pre.20220421.3-installer-linux-x86_64.sh --user
+
+cat << EOF >> ~/.bashrc
+export PATH="$PATH:$HOME/bin"
+source /home/thanhngan/.bazel/bin/bazel-complete.bash
+EOF
+
+. ~/.bashrc
+
+git clone https://gerrit.onosproject.org/onos
+cd onos
+
+cat << EOF >> ~/.bashrc
+export ONOS_ROOT="`pwd`"
+source $ONOS_ROOT/tools/dev/bash_profile
+EOF
+
+. ~/.bashrc
+
+cd $ONOS_ROOT
+
+bazel build onos
+
+## Run
+ok ## Dung roi, nhap "ok" vao terminal
+

@@ -1,0 +1,119 @@
+- Khởi chạy onos
+cd ~/onos
+
+cat << EOF >> ~/.bashrc
+export ONOS_ROOT="`pwd`"
+source $ONOS_ROOT/tools/dev/bash_profile
+EOF
+
+. ~/.bashrc
+
+- Local onos 8181/onos/ui: rocks
+
+bazel run onos-local [-- [clean] [debug]]
+
+------------------------------------------
+- Chạy containernet
+
+Chạy lệnh: sudo python3 containernet_example.py
+=> error: 409
+ docker ps -a
+sudo docker kill $(docker ps -q)
+sudo docker rm $(docker ps -a -q)
+
+pingall -> to check
+error: cant ping -> check app (start forward)
+
+
+ctrl H
+-----------------------------
+- Join suricata: sudo docker exec -it mn.suricata bash
+- Check status elksearch: sudo service elasticsearch status
+			  sudo service elasticsearch start > restart (if fail)
+- xem log suricata: (suricata) ls /var/log/suricata => eve chứa log 
+- sudo nano /etc/filebeat/filebeat.yml: command id, filestream = log, enable = true, path= eve gửi beat lên
+- Start kibana, filebeat
+- sudo filebeat modules enable suricata -> sudo filebeat setup
+- Vào kibana: 172.17.0.2:5601/login?next=%2F > filebeat suricata dashboard
+----------------------------
+Tấn công:
+- attacker1 sudo apt update
+- attacker1 sudo apt-get install hping3
+
+- suricata có 1 file rule: cd /etc/suricata
+
+- ls /var/lib/suricata
+- sudo suricata -c /etc/suricata/suricata.yaml --af-packet=suricata-eth0 : bật suricata
+
+- Mở một máy suricata mới: tail -f /var/log/suricata/eve.json xem log
+- hping3 -c 10000 -d 120 -S -w 64 -p 22 --flood --rand-source 10.0.0.1
+
+- Tấn công victim: sudo ovs-vsctl --id=@p get port s2-eth1 -- --id=@m create mirror name=m0 select-all=true output-port=@p -- set bridge s2 mirrors=@m
+=> pingall
+
+--------------------------------------------
+Changed password for user apm_system
+PASSWORD apm_system = CWAKdsk4ikP9X2glDo6T
+
+Changed password for user kibana_system
+PASSWORD kibana_system = sPqKIghtZM5nv2nKk5Rg
+
+Changed password for user kibana
+PASSWORD kibana = sPqKIghtZM5nv2nKk5Rg
+
+Changed password for user logstash_system
+PASSWORD logstash_system = D2UXOGcIBKeDuh4D7DhA
+
+Changed password for user beats_system
+PASSWORD beats_system = BcTzOLmQZIKfs3cEQVzd
+
+Changed password for user remote_monitoring_user
+PASSWORD remote_monitoring_user = xii6MMYgFCKkRHw9bDI9
+
+Changed password for user elastic
+PASSWORD elastic = WPgoOoZS6JmbHfrMtkg
+
+----------------------------------------------------------------------------
+xpack.encryptedSavedObjects.encryptionKey: 3418ae4b3bcd7d416829b7ad521583bb
+xpack.reporting.encryptionKey: 9fe876934ac0db590ffb4ca314902f03
+xpack.security.encryptionKey: ac0e536c87418925b32f080fd86aafc0
+
+thanhngan
+
+Changed password for user apm_system
+PASSWORD apm_system = LuJVTWypyyHLLwXkwUrF
+
+Changed password for user kibana_system
+PASSWORD kibana_system = 1LtUDh4Zjibe3fteuR6D
+
+Changed password for user kibana
+PASSWORD kibana = 1LtUDh4Zjibe3fteuR6D
+
+Changed password for user logstash_system
+PASSWORD logstash_system = HDQTLcSxWJ7q2Xjjx0wo
+
+Changed password for user beats_systemSS
+PASSWORD beats_system = EQ6H04fAdLwc7PXMmxAN
+
+Changed password for user remote_monitoring_user
+PASSWORD remote_monitoring_user = jhXQNMWH5pPz1EakWV8F
+
+Changed password for user elastic
+PASSWORD elastic = 3hKvU3yMvHwkpi9pFGGV
+
+default via 192.168.40.2 dev ens33 proto dhcp metric 100
+/var/lib/suricata/suricata.rules
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"LOCAL DOS SYN packet flood inbound, Potential DOS"; flow:to_server; flags: S,12; threshold: type both, track by_dst, count 5000, seconds 5; classtype:misc-activity; sid:5;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"LOCAL DOS SYN packet flood outbound, Potential DOS"; flow:to_server; flags: S,12; threshold: type both, track by_dst, count 5000, seconds 5; classtype:misc-activity; sid:6;)
+--------------------------------------
+
+gateway là 192.168.40.1 hoặc 192.168.40.2 do cùng mạng, th attacker với th victim= > set lại gateway mọi mạng đi vô đều phải qua suricata
+sudo ip route add default via ip_suricata (victim +att)
+---------------------------------------------------------------------------------
+			HONEYPOT
+
+C:\ProgramData\Beats\winlogbeat-8.10.0-windows-x86_64\logs
+71m1cbehxx442qCR3U54
+
+
+Password n8n:PTzUT_b)6*8#e%v
